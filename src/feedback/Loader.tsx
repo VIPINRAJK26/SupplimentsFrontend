@@ -42,12 +42,12 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
             }}
           >
             {/* Handle */}
-            <div className="relative h-20 w-7 rounded-xl border border-zinc-500 bg-gradient-to-b from-zinc-700 to-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] flex items-center justify-center">
+            <div className="relative h-20 w-7 rounded-xl border border-zinc-500 bg-linear-to-b from-zinc-700 to-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] flex items-center justify-center">
               <div className="h-12 w-2 rounded-full bg-zinc-400/40" />
             </div>
 
             {/* Rod */}
-            <div className="h-[6px] w-28 bg-gradient-to-r from-zinc-500 to-zinc-300 shadow-md" />
+            <div className="h-[6px] w-28 bg-linear-to-r from-zinc-500 to-zinc-300 shadow-md" />
           </motion.div>
 
           {/* Glass Tube */}
@@ -57,7 +57,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
 
             {/* Medicine */}
             <motion.div
-              className="absolute left-0 top-0 h-full bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.5)]"
+              className="absolute left-0 top-0 h-full bg-linear-to-r from-cyan-500 via-cyan-400 to-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.5)]"
               animate={{
                 width: ["85%", "15%", "85%"],
               }}
@@ -87,7 +87,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
 
         {/* Needle - Perfectly centered on the right of the glass tube */}
         <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 flex items-center">
-          <div className="h-[4px] w-[120px] bg-gradient-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+          <div className="h-[4px] w-[120px] bg-linear-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
 
           {/* Needle Tip */}
           <div className="h-3 w-3 rotate-45 border-r-[3px] border-t-[3px] border-zinc-100 -ml-1 shadow-[0_0_8px_rgba(255,255,255,0.8)]" />

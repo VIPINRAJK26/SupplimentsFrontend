@@ -29,7 +29,7 @@ const INITIAL_RECORDS: RecordItem[] = [
   {
     id: "REC-492018",
     orderDate: "2026-05-17",
-    customerName: "Pro Athlete Union",
+    customerName: "Arjun",
     customerTier: "Pro Partner",
     productName: "Pre-Workout Explosive Surge (300g)",
     quantity: 25,
@@ -40,7 +40,7 @@ const INITIAL_RECORDS: RecordItem[] = [
   {
     id: "REC-103948",
     orderDate: "2026-05-15",
-    customerName: "Metro Pharmacy Group",
+    customerName: "Ashique",
     customerTier: "Distributor",
     productName: "BCAA High-Energy Electrolytes (500g)",
     quantity: 50,
@@ -51,7 +51,7 @@ const INITIAL_RECORDS: RecordItem[] = [
   {
     id: "REC-883921",
     orderDate: "2026-05-14",
-    customerName: "Powerhouse Gyms",
+    customerName: "Nandu",
     customerTier: "Gym Partner",
     productName: "Micronized Creatine Monohydrate (1kg)",
     quantity: 15,
@@ -62,7 +62,7 @@ const INITIAL_RECORDS: RecordItem[] = [
   {
     id: "REC-339201",
     orderDate: "2026-05-12",
-    customerName: "Direct Consumer VIP",
+    customerName: "Ajay",
     customerTier: "Retail Club",
     productName: "Omega-3 Arctic Fish Oil (120 caps)",
     quantity: 8,
@@ -463,7 +463,7 @@ const RecordsPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.3 }}
-                        className="border-b border-white/5 hover:bg-white/[0.04] transition-colors group"
+                        className="border-b border-white/5 hover:bg-white/4 transition-colors group"
                       >
                         {/* ID and Date */}
                         <td className="py-5 px-6 font-mono">

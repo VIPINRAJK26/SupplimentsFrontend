@@ -19,19 +19,17 @@ interface Product {
 }
 
 const CUSTOMERS: Customer[] = [
-  { id: "c1", name: "Elite Fitness Club", tier: "Wholesale VIP", discountPercent: 30 },
-  { id: "c2", name: "Metro Pharmacy Group", tier: "Distributor", discountPercent: 25 },
-  { id: "c3", name: "Pro Athlete Union", tier: "Pro Partner", discountPercent: 35 },
-  { id: "c4", name: "Powerhouse Gyms", tier: "Gym Partner", discountPercent: 20 },
-  { id: "c5", name: "Direct Consumer VIP", tier: "Retail Club", discountPercent: 10 },
+  { id: "c1", name: "Akshay", tier: "Wholesale VIP", discountPercent: 30 },
+  { id: "c2", name: "Arjun", tier: "Distributor", discountPercent: 25 },
+  { id: "c3", name: "Nandu", tier: "Pro Partner", discountPercent: 35 },
+  { id: "c4", name: "Ashique", tier: "Gym Partner", discountPercent: 20 },
+  { id: "c5", name: "Ajay", tier: "Retail Club", discountPercent: 10 },
 ];
 
 const PRODUCTS: Product[] = [
-  { id: "p1", name: "Premium Ultra Whey Isolate (2kg)", category: "Proteins", basePrice: 7199 },
-  { id: "p2", name: "BCAA High-Energy Electrolytes (500g)", category: "Amino Acids", basePrice: 3199 },
-  { id: "p3", name: "Micronized Creatine Monohydrate (1kg)", category: "Strength", basePrice: 3679 },
-  { id: "p4", name: "Pre-Workout Explosive Surge (300g)", category: "Energy", basePrice: 3999 },
-  { id: "p5", name: "Omega-3 Arctic Fish Oil (120 caps)", category: "Wellness", basePrice: 2399 },
+  { id: "p1", name: "Blue (400)", category: "Proteins", basePrice: 7199 },
+  { id: "p2", name: "Box (400)", category: "Amino Acids", basePrice: 3199 },
+  { id: "p3", name: "500", category: "Strength", basePrice: 3679 },
 ];
 
 const SVG_ICONS = {
@@ -148,15 +146,7 @@ const IndexPage: React.FC = () => {
       <div className="absolute bottom-1/4 right-10 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
 
       {/* Top Navigation */}
-      <div className="w-full max-w-2xl mx-auto mb-6 flex justify-between items-center z-20 bg-white/5 backdrop-blur-2xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 font-black text-xl shadow-[0_0_20px_rgba(34,211,238,0.3)]">
-            Ω
-          </div>
-          <span className="text-xl font-black tracking-wider bg-linear-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
-            ANTIGRAVITY <span className="text-cyan-400 font-light">DISPATCH</span>
-          </span>
-        </div>
+      <div className="w-full  max-w-2xl mx-auto mb-6 flex justify-center items-center z-20 bg-white/5 backdrop-blur-2xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         <Link
           to="/records"
           className="px-5 py-2.5 bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 rounded-2xl font-black text-sm uppercase tracking-wider hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all flex items-center gap-2 shadow-lg cursor-pointer"
@@ -184,7 +174,7 @@ const IndexPage: React.FC = () => {
                 required
                 value={orderDate}
                 onChange={(e) => setOrderDate(e.target.value)}
-                className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-4 py-3.5 text-zinc-100 font-medium focus:outline-none focus:border-cyan-400/80 focus:ring-2 focus:ring-cyan-400/20 transition-all shadow-inner [color-scheme:dark] cursor-pointer"
+                className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-4 py-3.5 text-zinc-100 font-medium focus:outline-none focus:border-cyan-400/80 focus:ring-2 focus:ring-cyan-400/20 transition-all shadow-inner scheme-dark cursor-pointer"
               />
               <div className="absolute inset-0 rounded-2xl bg-cyan-400/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity" />
             </div>
