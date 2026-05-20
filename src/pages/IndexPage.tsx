@@ -211,7 +211,7 @@ const IndexPage: React.FC = () => {
             {/* 3. Product Selection */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                {SVG_ICONS.package} Supplement SKU
+                {SVG_ICONS.package} Supplement 
               </label>
               <div className="relative group">
                 <select
@@ -221,7 +221,7 @@ const IndexPage: React.FC = () => {
                   className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-4 py-3.5 text-zinc-100 font-medium appearance-none focus:outline-none focus:border-cyan-400/80 focus:ring-2 focus:ring-cyan-400/20 transition-all shadow-inner cursor-pointer"
                 >
                   <option value="" className="text-zinc-500">
-                    -- Select Product SKU --
+                    -- Select Product --
                   </option>
                   {PRODUCTS.map((p) => (
                     <option key={p.id} value={p.id} className="bg-zinc-900 text-zinc-100">

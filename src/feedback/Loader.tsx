@@ -12,7 +12,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#050816]/95 backdrop-blur-xl transition-all duration-500">
       {/* Background Glow */}
-      <div className="absolute h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-3xl animate-pulse" />
+      <div className="absolute h-[250px] w-[250px] rounded-full bg-cyan-500/10 blur-3xl animate-pulse" />
 
       {/* Syringe Wrapper - Rotated to -60 deg so needle points upward at a 30 degree tilt to right */}
       <motion.div
@@ -51,7 +51,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
           </motion.div>
 
           {/* Glass Tube */}
-          <div className="relative h-24 w-[380px] overflow-hidden rounded-r-[2.5rem] rounded-l-xl border border-white/20 bg-white/5 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.15)] flex items-center">
+          <div className="relative h-24 w-[200px] overflow-hidden rounded-r-[2.5rem] rounded-l-xl border border-white/20 bg-white/5 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.15)] flex items-center">
             {/* Inner Reflection */}
             <div className="absolute left-4 top-2 h-4 w-44 rounded-full bg-white/20 blur-md" />
 
@@ -86,8 +86,8 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
         </div>
 
         {/* Needle - Perfectly centered on the right of the glass tube */}
-        <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 flex items-center">
-          <div className="h-[4px] w-[120px] bg-linear-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+        <div className="absolute right-[-80px] top-1/2 -translate-y-1/2 flex items-center">
+          <div className="h-[4px] w-[80px] bg-linear-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
 
           {/* Needle Tip */}
           <div className="h-3 w-3 rotate-45 border-r-[3px] border-t-[3px] border-zinc-100 -ml-1 shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
@@ -123,7 +123,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
 
         {/* Glow under syringe */}
         <motion.div
-          className="absolute h-16 w-[360px] rounded-full bg-cyan-400/20 blur-3xl -z-10"
+          className="absolute h-16 w-[200px] rounded-full bg-cyan-400/20 blur-3xl -z-10"
           animate={{
             opacity: [0.4, 0.8, 0.4],
             scale: [1, 1.1, 1],
