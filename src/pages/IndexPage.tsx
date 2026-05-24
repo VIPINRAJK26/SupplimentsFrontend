@@ -2,6 +2,9 @@ import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import SyringeLoader from "../feedback/Loader";
+import { useCustomers } from "../features/customers/hooks/useCustomers";
+import { useProducts } from "../features/products/hooks/useProducts";
+import { useOrders } from "../features/orders/hooks/useOrders";
 
 // Mock Data
 interface Customer {
@@ -74,6 +77,15 @@ const IndexPage: React.FC = () => {
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [paymentType, setPaymentType] = useState<"Credit" | "Paid">("Paid");
+  const { data: customers } = useCustomers();
+  const { data: products } = useProducts();
+  const { data: orders } = useOrders();
+
+  console.log(products, 'products')
+
+  console.log(customers, 'customers')
+
+  console.log(orders, 'orders')
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
