@@ -7,31 +7,80 @@ import { useProducts } from "../features/products/hooks/useProducts";
 import { useOrders, useCreateOrder } from "../features/orders/hooks/useOrders";
 import type { CreateOrderPayload } from "../features/orders/api/getOrders";
 
-
 const SVG_ICONS = {
   calendar: (
-    <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    <svg
+      className="w-5 h-5 text-cyan-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
     </svg>
   ),
   user: (
-    <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg
+      className="w-5 h-5 text-purple-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
     </svg>
   ),
   package: (
-    <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+    <svg
+      className="w-5 h-5 text-cyan-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+      />
     </svg>
   ),
   tag: (
-    <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+    <svg
+      className="w-5 h-5 text-emerald-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+      />
     </svg>
   ),
   check: (
-    <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    <svg
+      className="w-6 h-6 text-emerald-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
     </svg>
   ),
 };
@@ -45,7 +94,9 @@ const formatINR = (amount: number) => {
 };
 
 const IndexPage: React.FC = () => {
-  const [orderDate, setOrderDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [orderDate, setOrderDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
@@ -56,33 +107,42 @@ const IndexPage: React.FC = () => {
   const { data: orders } = useOrders();
   const createOrderMutation = useCreateOrder();
 
-  console.log(products, 'products')
+  console.log(products, "products");
 
-  console.log(customers, 'customers')
+  console.log(customers, "customers");
 
-  console.log(orders, 'orders')
+  console.log(orders, "orders");
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const selectedCustomer = useMemo(() => {
-    return customers?.find((c:any) => String(c.user_id) === selectedCustomerId);
+    if (!Array.isArray(customers)) return null;
+
+    return customers.find((c) => String(c.user_id) === selectedCustomerId);
   }, [customers, selectedCustomerId]);
 
- const selectedProduct = useMemo(() => {
-   return products?.find((p:any) => String(p.product_id) === selectedProductId);
- }, [products, selectedProductId]);
+  const selectedProduct = useMemo(() => {
+    if (!Array.isArray(products)) return null;
+
+    return products.find((p) => String(p.product_id) === selectedProductId);
+  }, [products, selectedProductId]);
 
   const pricing = useMemo(() => {
-    if (!selectedCustomerId || !selectedProductId) return null;
+    if (
+      !Array.isArray(customers) ||
+      !selectedCustomerId ||
+      !selectedProductId
+    ) {
+      return null;
+    }
 
-    const customerProductRecord = customers?.find(
-      (c:any) =>
+    const customerProductRecord = customers.find(
+      (c) =>
         String(c.user_id) === selectedCustomerId &&
         String(c.product) === selectedProductId,
     );
 
-    // No price configured for this customer + product
     if (!customerProductRecord) return null;
 
     const unitPrice = Number(customerProductRecord.price);
@@ -201,7 +261,7 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Client --
                   </option>
-                  {customers?.map((c:any) => (
+                  {customers?.map((c: any) => (
                     <option key={c.user_id} value={String(c.user_id)}>
                       {c.name}
                     </option>
@@ -228,7 +288,7 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Product --
                   </option>
-                  {products?.map((p:any) => (
+                  {products?.map((p: any) => (
                     <option key={p.product_id} value={String(p.product_id)}>
                       {p.name}
                     </option>
