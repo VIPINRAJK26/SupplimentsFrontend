@@ -261,11 +261,12 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Client --
                   </option>
-                  {customers?.map((c: any) => (
-                    <option key={c.user_id} value={String(c.user_id)}>
-                      {c.name}
-                    </option>
-                  ))}
+                  {Array.isArray(customers) &&
+                    customers.map((c: any) => (
+                      <option key={c.user_id} value={String(c.user_id)}>
+                        {c.name}
+                      </option>
+                    ))}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 group-hover:text-cyan-400 transition-colors">
                   ▼
@@ -288,11 +289,12 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Product --
                   </option>
-                  {products?.map((p: any) => (
-                    <option key={p.product_id} value={String(p.product_id)}>
-                      {p.name}
-                    </option>
-                  ))}
+                  {Array.isArray(products) &&
+                    products.map((p: any) => (
+                      <option key={p.product_id} value={String(p.product_id)}>
+                        {p.name}
+                      </option>
+                    ))}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 group-hover:text-cyan-400 transition-colors">
                   ▼
