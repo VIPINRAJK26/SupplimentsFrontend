@@ -4,36 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import SyringeLoader from "../feedback/Loader";
 import { useCustomers } from "../features/customers/hooks/useCustomers";
 import { useProducts } from "../features/products/hooks/useProducts";
-import { useOrders } from "../features/orders/hooks/useOrders";
+import { useOrders, useCreateOrder } from "../features/orders/hooks/useOrders";
+import type { CreateOrderPayload } from "../features/orders/api/getOrders";
 
-// Mock Data
-interface Customer {
-  id: string;
-  name: string;
-  tier: string;
-  discountPercent: number;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  basePrice: number;
-}
-
-const CUSTOMERS: Customer[] = [
-  { id: "c1", name: "Akshay", tier: "Wholesale VIP", discountPercent: 30 },
-  { id: "c2", name: "Arjun", tier: "Distributor", discountPercent: 25 },
-  { id: "c3", name: "Nandu", tier: "Pro Partner", discountPercent: 35 },
-  { id: "c4", name: "Ashique", tier: "Gym Partner", discountPercent: 20 },
-  { id: "c5", name: "Ajay", tier: "Retail Club", discountPercent: 10 },
-];
-
-const PRODUCTS: Product[] = [
-  { id: "p1", name: "Blue (400)", category: "Proteins", basePrice: 7199 },
-  { id: "p2", name: "Box (400)", category: "Amino Acids", basePrice: 3199 },
-  { id: "p3", name: "500", category: "Strength", basePrice: 3679 },
-];
 
 const SVG_ICONS = {
   calendar: (
@@ -77,9 +50,11 @@ const IndexPage: React.FC = () => {
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [paymentType, setPaymentType] = useState<"Credit" | "Paid">("Paid");
+  const [creditAmount, setCreditAmount] = useState<string>("");
   const { data: customers } = useCustomers();
   const { data: products } = useProducts();
   const { data: orders } = useOrders();
+  const createOrderMutation = useCreateOrder();
 
   console.log(products, 'products')
 
@@ -91,53 +66,71 @@ const IndexPage: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const selectedCustomer = useMemo(() => {
-    return CUSTOMERS.find((c) => c.id === selectedCustomerId);
-  }, [selectedCustomerId]);
+    return customers?.find((c:any) => String(c.user_id) === selectedCustomerId);
+  }, [customers, selectedCustomerId]);
 
-  const selectedProduct = useMemo(() => {
-    return PRODUCTS.find((p) => p.id === selectedProductId);
-  }, [selectedProductId]);
+ const selectedProduct = useMemo(() => {
+   return products?.find((p:any) => String(p.product_id) === selectedProductId);
+ }, [products, selectedProductId]);
 
   const pricing = useMemo(() => {
-    if (!selectedCustomer || !selectedProduct) return null;
-    const base = selectedProduct.basePrice * quantity;
-    const discountAmount = (base * selectedCustomer.discountPercent) / 100;
-    const finalPrice = base - discountAmount;
+    if (!selectedCustomerId || !selectedProductId) return null;
+
+    const customerProductRecord = customers?.find(
+      (c:any) =>
+        String(c.user_id) === selectedCustomerId &&
+        String(c.product) === selectedProductId,
+    );
+
+    // No price configured for this customer + product
+    if (!customerProductRecord) return null;
+
+    const unitPrice = Number(customerProductRecord.price);
+
+    const finalPrice = unitPrice * quantity;
+
     return {
-      baseTotalFormatted: formatINR(base),
-      discountAmountFormatted: formatINR(discountAmount),
-      finalPriceFormatted: formatINR(finalPrice),
+      unitPrice,
       finalPriceNum: finalPrice,
-      tier: selectedCustomer.tier,
-      rate: selectedCustomer.discountPercent,
+      finalPriceFormatted: formatINR(finalPrice),
     };
-  }, [selectedCustomer, selectedProduct, quantity]);
+  }, [customers, selectedCustomerId, selectedProductId, quantity]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedCustomerId || !selectedProductId || !pricing) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
 
-      // Save record to localStorage
-      const existing = localStorage.getItem("B2B_SUPPLEMENT_RECORDS");
-      const records = existing ? JSON.parse(existing) : [];
-      const newRecord = {
-        id: "REC-" + Math.floor(100000 + Math.random() * 900000),
-        orderDate,
-        customerName: selectedCustomer?.name || "Unknown Client",
-        customerTier: selectedCustomer?.tier || "Standard",
-        productName: selectedProduct?.name || "Unknown SKU",
+    if (!selectedCustomerId || !selectedProductId || !pricing) return;
+
+    if (paymentType === "Credit" && !creditAmount) {
+      alert("Enter credit amount");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const payload: CreateOrderPayload = {
+        user: Number(selectedCustomerId),
+        product: Number(selectedProductId),
         quantity,
-        finalPrice: pricing.finalPriceNum,
-        paymentStatus: paymentType,
-        createdAt: new Date().toISOString(),
+
+        status: paymentType === "Credit" ? "credit" : "paid",
+
+        price: pricing.finalPriceNum,
+
+        credit_price: paymentType === "Credit" ? Number(creditAmount) : null,
       };
-      localStorage.setItem("B2B_SUPPLEMENT_RECORDS", JSON.stringify([newRecord, ...records]));
+
+      await createOrderMutation.mutateAsync(payload);
+      setCreditAmount("");
 
       setShowSuccessModal(true);
-    }, 2500);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create order");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -208,9 +201,9 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Client --
                   </option>
-                  {CUSTOMERS.map((c) => (
-                    <option key={c.id} value={c.id} className="bg-zinc-900 text-zinc-100">
-                      {c.name} ({c.tier})
+                  {customers?.map((c:any) => (
+                    <option key={c.user_id} value={String(c.user_id)}>
+                      {c.name}
                     </option>
                   ))}
                 </select>
@@ -223,7 +216,7 @@ const IndexPage: React.FC = () => {
             {/* 3. Product Selection */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                {SVG_ICONS.package} Supplement 
+                {SVG_ICONS.package} Supplement
               </label>
               <div className="relative group">
                 <select
@@ -235,9 +228,9 @@ const IndexPage: React.FC = () => {
                   <option value="" className="text-zinc-500">
                     -- Select Product --
                   </option>
-                  {PRODUCTS.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-zinc-900 text-zinc-100">
-                      {p.name} - {formatINR(p.basePrice)}
+                  {products?.map((p:any) => (
+                    <option key={p.product_id} value={String(p.product_id)}>
+                      {p.name}
                     </option>
                   ))}
                 </select>
@@ -250,7 +243,9 @@ const IndexPage: React.FC = () => {
 
           {/* Quantity Selector */}
           <div className="flex items-center justify-between bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
-            <span className="text-sm font-semibold text-zinc-300">Quantity</span>
+            <span className="text-sm font-semibold text-zinc-300">
+              Quantity
+            </span>
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -259,7 +254,9 @@ const IndexPage: React.FC = () => {
               >
                 -
               </button>
-              <span className="w-10 text-center font-bold text-lg text-cyan-400">{quantity}</span>
+              <span className="w-10 text-center font-bold text-lg text-cyan-400">
+                {quantity}
+              </span>
               <button
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
@@ -281,27 +278,30 @@ const IndexPage: React.FC = () => {
                 className="overflow-hidden"
               >
                 <div className="bg-linear-to-br from-cyan-500/10 via-purple-500/10 to-transparent border border-cyan-400/30 rounded-3xl p-6 sm:p-8 space-y-4 shadow-[0_0_40px_rgba(34,211,238,0.15)] relative backdrop-blur-md">
-                  <div className="absolute -top-3 right-6 bg-cyan-400 text-zinc-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                  {/* <div className="absolute -top-3 right-6 bg-cyan-400 text-zinc-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
                     {pricing.tier} (-{pricing.rate}%)
-                  </div>
+                  </div> */}
 
                   <div className="flex items-center gap-2 text-cyan-300 font-bold text-sm tracking-wide">
-                    {SVG_ICONS.tag} Contract Pricing Summary
+                    {SVG_ICONS.tag}Pricing Summary
                   </div>
 
                   <div className="space-y-2 border-b border-white/10 pb-4">
                     <div className="flex justify-between text-zinc-400 text-sm">
-                      <span>Base Total ({quantity}x)</span>
-                      <span className="font-mono">{pricing.baseTotalFormatted}</span>
+                      <span>Unit Price</span>
+                      <span className="font-mono">{pricing.finalPriceNum}</span>
                     </div>
-                    <div className="flex justify-between text-emerald-400 text-sm font-medium">
-                      <span>Contract Discount</span>
-                      <span className="font-mono">-{pricing.discountAmountFormatted}</span>
+
+                    <div className="flex justify-between text-zinc-400 text-sm">
+                      <span>Quantity</span>
+                      <span className="font-mono">{quantity}</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-baseline pt-2">
-                    <span className="text-lg font-bold text-zinc-200">Final Price</span>
+                    <span className="text-lg font-bold text-zinc-200">
+                      Final Price
+                    </span>
                     <span className="text-3xl sm:text-4xl font-extrabold text-cyan-400 tracking-tight font-mono drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">
                       {pricing.finalPriceFormatted}
                     </span>
@@ -310,7 +310,8 @@ const IndexPage: React.FC = () => {
               </motion.div>
             ) : (
               <div className="border border-dashed border-white/10 rounded-3xl p-6 text-center text-zinc-500 text-sm font-medium bg-zinc-900/30">
-                Select a Client Partner and Supplement SKU to view computed pricing.
+                Select a Client Partner and Supplement SKU to view computed
+                pricing.
               </div>
             )}
           </AnimatePresence>
@@ -335,7 +336,10 @@ const IndexPage: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setPaymentType("Paid")}
+                onClick={() => {
+                  setPaymentType("Paid");
+                  setCreditAmount("");
+                }}
                 className={`py-3.5 rounded-xl font-bold text-sm transition-all duration-300 relative flex items-center justify-center gap-2 cursor-pointer ${
                   paymentType === "Paid"
                     ? "bg-linear-to-r from-cyan-500 to-teal-500 text-zinc-950 font-extrabold shadow-[0_0_25px_rgba(6,182,212,0.5)]"
@@ -345,6 +349,33 @@ const IndexPage: React.FC = () => {
                 <span>Paid</span>
               </button>
             </div>
+
+            <AnimatePresence>
+              {paymentType === "Credit" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2 mt-4">
+                    <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                      Credit Amount
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      max={pricing?.finalPriceNum}
+                      value={creditAmount}
+                      onChange={(e) => setCreditAmount(e.target.value)}
+                      placeholder="Enter remaining credit amount"
+                      className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-4 py-3.5 text-zinc-100 focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* 6. Finally the submit button */}
@@ -379,15 +410,27 @@ const IndexPage: React.FC = () => {
                 {SVG_ICONS.check}
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-black text-white">Order Successfully Dispatched!</h3>
+                <h3 className="text-2xl font-black text-white">
+                  Order Successfully Dispatched!
+                </h3>
                 <p className="text-zinc-400 text-sm font-medium">
-                  Dispatch record created for <strong className="text-cyan-400">{selectedCustomer?.name}</strong>. Invoice marked as <span className="underline decoration-cyan-400 font-bold">{paymentType}</span>.
+                  Dispatch record created for{" "}
+                  <strong className="text-cyan-400">
+                    {selectedCustomer?.name}
+                  </strong>
+                  . Invoice marked as{" "}
+                  <span className="underline decoration-cyan-400 font-bold">
+                    {paymentType}
+                  </span>
+                  .
                 </p>
               </div>
               <div className="bg-zinc-950/60 p-4 rounded-2xl border border-white/5 text-left text-sm space-y-2">
                 <div className="flex justify-between text-zinc-400">
                   <span>Product:</span>
-                  <span className="text-zinc-200 truncate ml-2 max-w-[200px]">{selectedProduct?.name}</span>
+                  <span className="text-zinc-200 truncate ml-2 max-w-[200px]">
+                    {selectedProduct?.name}
+                  </span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>Quantity:</span>
@@ -395,7 +438,9 @@ const IndexPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-zinc-400 pt-1 border-t border-white/5">
                   <span>Total Billed:</span>
-                  <span className="text-cyan-400 font-mono font-extrabold">{pricing?.finalPriceFormatted}</span>
+                  <span className="text-cyan-400 font-mono font-extrabold">
+                    {pricing?.finalPriceFormatted}
+                  </span>
                 </div>
               </div>
               <div className="flex gap-3">
