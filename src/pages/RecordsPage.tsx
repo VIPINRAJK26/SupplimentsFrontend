@@ -373,7 +373,7 @@ const RecordsPage: React.FC = () => {
         {/* Navigation Header */}
         <header className="flex justify-center items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
           <Link
-            to="/"
+            to="/index"
             className="px-5 py-2.5 bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 rounded-2xl font-black text-sm uppercase tracking-wider hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all flex items-center gap-2 shadow-lg cursor-pointer"
           >
             {SVG_ICONS.plus} New Dispatch
