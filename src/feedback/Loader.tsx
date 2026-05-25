@@ -16,7 +16,7 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
 
       {/* Syringe Wrapper - Rotated to -60 deg so needle points upward at a 30 degree tilt to right */}
       <motion.div
-        className="relative flex items-center justify-center"
+        className="relative flex items-center justify-center scale-[0.55] sm:scale-[0.7]"
         animate={{
           rotate: [-60, -58, -60],
           y: [0, -8, 0],
@@ -42,18 +42,18 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
             }}
           >
             {/* Handle */}
-            <div className="relative h-20 w-7 rounded-xl border border-zinc-500 bg-linear-to-b from-zinc-700 to-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] flex items-center justify-center">
-              <div className="h-12 w-2 rounded-full bg-zinc-400/40" />
+            <div className="relative h-12 w-6 rounded-xl border border-zinc-500 bg-linear-to-b from-zinc-700 to-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.08)] flex items-center justify-center">
+              <div className="h-7 w-[5px] rounded-full bg-zinc-400/40" />
             </div>
 
             {/* Rod */}
-            <div className="h-[6px] w-28 bg-linear-to-r from-zinc-500 to-zinc-300 shadow-md" />
+            <div className="h-[4px] w-16 bg-linear-to-r from-zinc-500 to-zinc-300 shadow-md" />
           </motion.div>
 
           {/* Glass Tube */}
-          <div className="relative h-24 w-[200px] overflow-hidden rounded-r-[2.5rem] rounded-l-xl border border-white/20 bg-white/5 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.15)] flex items-center">
+          <div className="relative h-14 w-[120px] overflow-hidden rounded-r-[2.5rem] rounded-l-xl border border-white/20 bg-white/5 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.15)] flex items-center">
             {/* Inner Reflection */}
-            <div className="absolute left-4 top-2 h-4 w-44 rounded-full bg-white/20 blur-md" />
+            <div className="absolute left-3 top-1.5 h-2 w-24 rounded-full bg-white/20 blur-md" />
 
             {/* Medicine */}
             <motion.div
@@ -86,19 +86,19 @@ const SyringeLoader: React.FC<SyringeLoaderProps> = ({ isOpen = true }) => {
         </div>
 
         {/* Needle - Perfectly centered on the right of the glass tube */}
-        <div className="absolute right-[-80px] top-1/2 -translate-y-1/2 flex items-center">
-          <div className="h-[4px] w-[80px] bg-linear-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+        <div className="absolute right-[-40px] top-1/2 -translate-y-1/2 flex items-center">
+          <div className="h-[4px] w-[40px] bg-linear-to-r from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
 
           {/* Needle Tip */}
           <div className="h-3 w-3 rotate-45 border-r-[3px] border-t-[3px] border-zinc-100 -ml-1 shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
         </div>
 
         {/* Liquid Spill Droplets */}
-        <div className="absolute right-[-150px] top-1/2 -translate-y-1/2">
+        <div className="absolute right-[-95px] top-1/2 -translate-y-1/2">
           {drops.map((drop, i) => (
             <motion.div
               key={drop}
-              className="absolute h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_20px_rgba(103,232,249,1)]"
+              className="absolute h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_20px_rgba(103,232,249,1)]"
               initial={{
                 opacity: 0,
                 x: 0,

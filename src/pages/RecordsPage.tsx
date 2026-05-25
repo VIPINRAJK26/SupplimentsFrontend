@@ -401,7 +401,9 @@ const RecordsPage: React.FC = () => {
             </div>
             <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               {stats.totalUnits}{" "}
-              <span className="text-base text-zinc-500 font-medium">SKUs</span>
+              <span className="text-base text-zinc-500 font-medium">
+                bottles
+              </span>
             </div>
           </div>
 
@@ -640,7 +642,6 @@ const RecordsPage: React.FC = () => {
                             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 group-hover/select:text-cyan-400 transition-colors text-xs">
                               {SVG_ICONS.refresh}
                             </div>
-
                           </div>
                         </td>
                       </motion.tr>
@@ -661,7 +662,7 @@ const RecordsPage: React.FC = () => {
           </div>
 
           {/* Mobile / Tablet Cards View */}
-          <div className="block lg:hidden divide-y divide-white/10">
+          <div className="block lg:hidden space-y-5 divide-white/10">
             <AnimatePresence>
               {filteredRecords.length > 0 ? (
                 filteredRecords.map((record) => (
@@ -671,7 +672,16 @@ const RecordsPage: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="p-6 space-y-4"
+                    className="
+p-6
+space-y-4
+rounded-[2rem]
+bg-white/[0.03]
+border
+border-white/10
+backdrop-blur-xl
+shadow-[0_10px_40px_rgba(0,0,0,0.25)]
+"
                   >
                     <div className="flex justify-between items-start">
                       <div>
