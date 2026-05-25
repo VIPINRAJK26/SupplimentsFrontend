@@ -19,3 +19,9 @@ export const createOrder = async (payload: CreateOrderPayload) => {
 
   return data;
 };
+
+export const updateOrder = async (id: number, payload: any) => {
+  const { data } = await axiosInstance.patch(`/orders/${id}/`, payload);
+
+  return data;
+};

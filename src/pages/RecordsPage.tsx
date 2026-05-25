@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useOrders, useUpdateOrder } from "../features/orders/hooks/useOrders";
+import { useCustomers } from "../features/customers/hooks/useCustomers";
+import { useProducts } from "../features/products/hooks/useProducts";
 
 export interface RecordItem {
   id: string;
@@ -9,68 +12,17 @@ export interface RecordItem {
   customerTier: string;
   productName: string;
   quantity: number;
+
   finalPrice: number;
+
   paymentStatus: "Credit" | "Paid";
+
+  creditAmount: number | null;
+
+  paidAmount: number;
+
   createdAt: string;
 }
-
-const INITIAL_RECORDS: RecordItem[] = [
-  {
-    id: "REC-728194",
-    orderDate: "2026-05-18",
-    customerName: "Akshay",
-    customerTier: "Wholesale VIP",
-    productName: "Premium Ultra Whey Isolate (2kg)",
-    quantity: 12,
-    finalPrice: 60473.6,
-    paymentStatus: "Paid",
-    createdAt: "2026-05-18T10:30:00Z",
-  },
-  {
-    id: "REC-492018",
-    orderDate: "2026-05-17",
-    customerName: "Arjun",
-    customerTier: "Pro Partner",
-    productName: "Pre-Workout Explosive Surge (300g)",
-    quantity: 25,
-    finalPrice: 64987.2,
-    paymentStatus: "Credit",
-    createdAt: "2026-05-17T14:15:00Z",
-  },
-  {
-    id: "REC-103948",
-    orderDate: "2026-05-15",
-    customerName: "Ashique",
-    customerTier: "Distributor",
-    productName: "BCAA High-Energy Electrolytes (500g)",
-    quantity: 50,
-    finalPrice: 119969.6,
-    paymentStatus: "Paid",
-    createdAt: "2026-05-15T09:20:00Z",
-  },
-  {
-    id: "REC-883921",
-    orderDate: "2026-05-14",
-    customerName: "Nandu",
-    customerTier: "Gym Partner",
-    productName: "Micronized Creatine Monohydrate (1kg)",
-    quantity: 15,
-    finalPrice: 44150.4,
-    paymentStatus: "Paid",
-    createdAt: "2026-05-14T16:45:00Z",
-  },
-  {
-    id: "REC-339201",
-    orderDate: "2026-05-12",
-    customerName: "Ajay",
-    customerTier: "Retail Club",
-    productName: "Omega-3 Arctic Fish Oil (120 caps)",
-    quantity: 8,
-    finalPrice: 17274.4,
-    paymentStatus: "Credit",
-    createdAt: "2026-05-12T11:05:00Z",
-  },
-];
 
 const SVG_ICONS = {
   search: (
@@ -217,30 +169,127 @@ const RecordsPage: React.FC = () => {
     "All",
   );
   const [sortBy, setSortBy] = useState<"date" | "price" | "quantity">("date");
+  const { data: orders } = useOrders();
+  console.log(orders, "orders in order page");
+  const { data: customers } = useCustomers();
+  const { data: products } = useProducts();
+  const updateOrderMutation = useUpdateOrder();
+
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  const [selectedRecord, setSelectedRecord] = useState<RecordItem | null>(null);
+
+  const [receivedAmount, setReceivedAmount] = useState("");
 
   useEffect(() => {
-    const stored = localStorage.getItem("B2B_SUPPLEMENT_RECORDS");
-    if (stored) {
-      try {
-        setRecords(JSON.parse(stored));
-      } catch (e) {
-        setRecords(INITIAL_RECORDS);
-      }
-    } else {
-      setRecords(INITIAL_RECORDS);
-      localStorage.setItem(
-        "B2B_SUPPLEMENT_RECORDS",
-        JSON.stringify(INITIAL_RECORDS),
-      );
+    if (
+      !Array.isArray(orders) ||
+      !Array.isArray(customers) ||
+      !Array.isArray(products)
+    ) {
+      setRecords([]);
+      return;
     }
-  }, []);
 
-  const handleStatusUpdate = (id: string, newStatus: "Paid" | "Credit") => {
-    const updated = records.map((record) =>
-      record.id === id ? { ...record, paymentStatus: newStatus } : record,
-    );
-    setRecords(updated);
-    localStorage.setItem("B2B_SUPPLEMENT_RECORDS", JSON.stringify(updated));
+    const transformedRecords: RecordItem[] = orders.map((order: any) => {
+      const customer = customers.find((c: any) => c.user_id === order.user);
+
+      const product = products.find((p: any) => p.product_id === order.product);
+
+      const totalPrice = Number(order.price);
+
+      const creditAmount = order.credit_price
+        ? Number(order.credit_price)
+        : null;
+
+      const paidAmount =
+        order.status === "credit"
+          ? totalPrice - (creditAmount ?? 0)
+          : totalPrice;
+
+      return {
+        id: `ORD-${order.order_id}`,
+
+        orderDate: order.created_at,
+
+        customerName: customer?.name ?? "Unknown Customer",
+
+        customerTier: customer?.price ? `₹${customer.price}` : "Standard",
+
+        productName: product?.name ?? "Unknown Product",
+
+        quantity: order.quantity,
+
+        finalPrice: totalPrice,
+
+        paymentStatus: order.status === "credit" ? "Credit" : "Paid",
+
+        creditAmount,
+
+        paidAmount,
+
+        createdAt: order.created_at,
+      };
+    });
+
+    setRecords(transformedRecords);
+  }, [orders, customers, products]);
+
+  const handleStatusUpdate = async (
+    id: string,
+    newStatus: "Paid" | "Credit",
+  ) => {
+    const orderId = Number(id.replace("ORD-", ""));
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: orderId,
+
+        payload: {
+          status: newStatus.toLowerCase(),
+
+          credit_price: newStatus === "Paid" ? null : 0,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+
+      alert("Failed to update status");
+    }
+  };
+
+  const handleReceivePayment = async () => {
+    if (!selectedRecord || !receivedAmount) return;
+
+    const remaining = selectedRecord.creditAmount ?? 0;
+
+    const payment = Number(receivedAmount);
+
+    const newCredit = remaining - payment;
+
+    const orderId = Number(selectedRecord.id.replace("ORD-", ""));
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: orderId,
+
+        payload: {
+          status: newCredit <= 0 ? "paid" : "credit",
+
+          credit_price: newCredit <= 0 ? null : newCredit,
+        },
+      });
+
+      setShowPaymentModal(false);
+
+      setSelectedRecord(null);
+
+      setReceivedAmount("");
+    } catch (error) {
+      console.error(error);
+
+      alert("Payment update failed");
+    }
   };
 
   const formatINR = (amount: number) => {
@@ -519,8 +568,22 @@ const RecordsPage: React.FC = () => {
                         </td>
 
                         {/* Price */}
-                        <td className="py-5 px-6 text-right font-mono font-extrabold text-base text-white">
-                          {formatINR(record.finalPrice)}
+                        <td className="py-5 px-6 text-right">
+                          <div className="font-mono font-extrabold text-base text-white">
+                            {formatINR(record.finalPrice)}
+                          </div>
+
+                          {record.paymentStatus === "Credit" && (
+                            <div className="mt-2 text-xs space-y-1">
+                              <div className="text-emerald-400">
+                                Paid: {formatINR(record.paidAmount)}
+                              </div>
+
+                              <div className="text-purple-400">
+                                Credit: {formatINR(record.creditAmount ?? 0)}
+                              </div>
+                            </div>
+                          )}
                         </td>
 
                         {/* Action / Select Status Dropdown */}
@@ -550,9 +613,34 @@ const RecordsPage: React.FC = () => {
                                 ● Status: Credit
                               </option>
                             </select>
+                            {record.paymentStatus === "Credit" && (
+                              <button
+                                onClick={() => {
+                                  setSelectedRecord(record);
+
+                                  setShowPaymentModal(true);
+                                }}
+                                className="
+    ml-3
+    px-3
+    py-2
+    rounded-xl
+    bg-purple-500/15
+    border
+    border-purple-400/20
+    text-purple-300
+    text-xs
+    font-bold
+    cursor-pointer
+  "
+                              >
+                                Receive Payment
+                              </button>
+                            )}
                             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 group-hover/select:text-cyan-400 transition-colors text-xs">
                               {SVG_ICONS.refresh}
                             </div>
+
                           </div>
                         </td>
                       </motion.tr>
@@ -634,44 +722,102 @@ const RecordsPage: React.FC = () => {
                         <span className="text-zinc-500 text-xs block">
                           Total Price
                         </span>
+
                         <span className="font-mono font-extrabold text-xl text-white">
                           {formatINR(record.finalPrice)}
                         </span>
+
+                        {record.paymentStatus === "Credit" && (
+                          <div className="mt-2 space-y-1 text-xs">
+                            <div className="text-emerald-400 font-semibold">
+                              Paid: {formatINR(record.paidAmount)}
+                            </div>
+
+                            <div className="text-purple-400 font-semibold">
+                              Credit: {formatINR(record.creditAmount ?? 0)}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-white/5 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                        Update Status:
-                      </span>
-                      <div className="relative inline-block">
-                        <select
-                          value={record.paymentStatus}
-                          onChange={(e) =>
-                            handleStatusUpdate(
-                              record.id,
-                              e.target.value as "Paid" | "Credit",
-                            )
-                          }
-                          className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-extrabold uppercase tracking-wider text-zinc-200 focus:outline-none focus:border-cyan-400/80 appearance-none pr-8"
-                        >
-                          <option
-                            value="Paid"
-                            className="bg-zinc-950 text-cyan-400"
+                    <div className="pt-3 border-t border-white/5 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                          Update Status:
+                        </span>
+
+                        <div className="relative inline-block">
+                          <select
+                            value={record.paymentStatus}
+                            onChange={(e) =>
+                              handleStatusUpdate(
+                                record.id,
+                                e.target.value as "Paid" | "Credit",
+                              )
+                            }
+                            className="
+        bg-zinc-900
+        border
+        border-white/10
+        rounded-xl
+        px-3
+        py-1.5
+        text-xs
+        font-extrabold
+        uppercase
+        tracking-wider
+        text-zinc-200
+        focus:outline-none
+        focus:border-cyan-400/80
+        appearance-none
+        pr-8
+        "
                           >
-                            ● Status: Paid
-                          </option>
-                          <option
-                            value="Credit"
-                            className="bg-zinc-950 text-purple-400"
+                            <option value="Paid">● Status: Paid</option>
+
+                            <option value="Credit">● Status: Credit</option>
+                          </select>
+
+                          <div
+                            className="
+      absolute
+      right-2.5
+      top-1/2
+      -translate-y-1/2
+      pointer-events-none
+      text-zinc-400
+      text-xs
+      "
                           >
-                            ● Status: Credit
-                          </option>
-                        </select>
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-xs">
-                          {SVG_ICONS.refresh}
+                            {SVG_ICONS.refresh}
+                          </div>
                         </div>
                       </div>
+
+                      {record.paymentStatus === "Credit" && (
+                        <button
+                          onClick={() => {
+                            setSelectedRecord(record);
+
+                            setShowPaymentModal(true);
+                          }}
+                          className="
+      w-full
+      rounded-2xl
+      py-3
+      bg-purple-500/15
+      border
+      border-purple-400/20
+      text-purple-300
+      text-sm
+      font-bold
+      cursor-pointer
+      "
+                        >
+                          Receive Payment
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 ))
@@ -684,6 +830,201 @@ const RecordsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showPaymentModal && selectedRecord && (
+          <div
+            className="
+fixed
+inset-0
+z-[999]
+flex
+items-center
+justify-center
+bg-black/70
+backdrop-blur-sm
+p-4
+"
+          >
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              transition={{
+                duration: 0.2,
+              }}
+              className="
+w-full
+max-w-md
+bg-zinc-900
+border
+border-white/10
+rounded-3xl
+p-6
+space-y-5
+shadow-2xl
+"
+            >
+              <div
+                className="
+flex
+justify-between
+items-center
+"
+              >
+                <h3
+                  className="
+text-xl
+font-bold
+text-white
+"
+                >
+                  Receive Payment
+                </h3>
+
+                <button
+                  onClick={() => {
+                    setShowPaymentModal(false);
+
+                    setSelectedRecord(null);
+
+                    setReceivedAmount("");
+                  }}
+                  className="
+text-zinc-400
+hover:text-white
+text-xl
+cursor-pointer
+"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div
+                className="
+space-y-4
+"
+              >
+                <div
+                  className="
+bg-zinc-950/70
+rounded-2xl
+p-4
+border
+border-white/5
+space-y-2
+"
+                >
+                  <p
+                    className="
+text-xs
+text-zinc-400
+
+"
+                  >
+                    Customer
+                  </p>
+
+                  <p
+                    className="
+font-bold
+text-white
+"
+                  >
+                    {selectedRecord.customerName}
+                  </p>
+
+                  <p
+                    className="
+text-purple-400
+font-medium
+text-xs
+
+"
+                  >
+                    Remaining Credit:{" "}
+                    {formatINR(selectedRecord.creditAmount ?? 0)}
+                  </p>
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={receivedAmount}
+                  onChange={(e) => setReceivedAmount(e.target.value)}
+                  placeholder="
+Enter received amount
+"
+                  className="
+w-full
+rounded-2xl
+bg-zinc-950
+border
+border-white/10
+px-4
+py-3
+text-white
+focus:outline-none
+focus:border-purple-400
+"
+                />
+              </div>
+
+              <div
+                className="
+flex
+gap-3
+"
+              >
+                <button
+                  onClick={() => {
+                    setShowPaymentModal(false);
+
+                    setSelectedRecord(null);
+                  }}
+                  className="
+flex-1
+py-3
+bg-zinc-800
+rounded-2xl
+font-medium
+text-xs
+cursor-pointer
+"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleReceivePayment}
+                  className="
+flex-1
+py-3
+bg-purple-500
+rounded-2xl
+text-white
+font-medium
+text-xs
+cursor-pointer
+"
+                >
+                  Update Payment
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
