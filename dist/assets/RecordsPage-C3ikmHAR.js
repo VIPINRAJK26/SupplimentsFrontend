@@ -1,0 +1,144 @@
+import{a as e,i as t,n,o as r,r as i}from"./useOrders-B_O2zRSC.js";import{A as a,O as o,b as s,j as c,k as l}from"./index-Cctx0WIw.js";var u=c(a(),1),d=o(),f={search:(0,d.jsx)(`svg`,{className:`w-5 h-5 text-zinc-400`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`})}),filter:(0,d.jsx)(`svg`,{className:`w-5 h-5 text-zinc-400`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z`})}),calendar:(0,d.jsx)(`svg`,{className:`w-4 h-4 text-cyan-400 shrink-0`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z`})}),user:(0,d.jsx)(`svg`,{className:`w-4 h-4 text-purple-400 shrink-0`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z`})}),package:(0,d.jsx)(`svg`,{className:`w-4 h-4 text-emerald-400 shrink-0`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4`})}),trending:(0,d.jsx)(`svg`,{className:`w-5 h-5 text-cyan-400`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M13 7h8m0 0v8m0-8l-8 8-4-4-6 6`})}),tag:(0,d.jsx)(`svg`,{className:`w-4 h-4 text-cyan-400`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z`})}),plus:(0,d.jsx)(`svg`,{className:`w-4 h-4 text-zinc-950 font-bold`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M12 4v16m8-8H4`})}),refresh:(0,d.jsx)(`svg`,{className:`w-3.5 h-3.5 text-zinc-400 group-hover:text-cyan-400 transition-colors`,fill:`none`,stroke:`currentColor`,viewBox:`0 0 24 24`,children:(0,d.jsx)(`path`,{strokeLinecap:`round`,strokeLinejoin:`round`,strokeWidth:2,d:`M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15`})})},p=()=>{let[a,o]=(0,u.useState)([]),[c,p]=(0,u.useState)(``),[m,h]=(0,u.useState)(`All`),[g,_]=(0,u.useState)(`date`),{data:v}=n(),{data:y}=e(),{data:b}=t(),x=i(),[S,C]=(0,u.useState)(!1),[w,T]=(0,u.useState)(null),[E,D]=(0,u.useState)(``);(0,u.useEffect)(()=>{if(!Array.isArray(v)||!Array.isArray(y)||!Array.isArray(b)){o([]);return}o(v.map(e=>{let t=y.find(t=>t.user_id===e.user),n=b.find(t=>t.product_id===e.product),r=Number(e.price),i=e.credit_price?Number(e.credit_price):null,a=e.status===`credit`?r-(i??0):r;return{id:`ORD-${e.order_id}`,orderDate:e.created_at,customerName:t?.name??`Unknown Customer`,customerTier:t?.price?`₹${t.price}`:`Standard`,productName:n?.name??`Unknown Product`,quantity:e.quantity,quantityStatus:e.quantity_status,looseQuantity:e.loose_quantity,bottleQuantity:e.bottle_quantity,finalPrice:r,paymentStatus:e.status===`credit`?`Credit`:`Paid`,creditAmount:i,paidAmount:a,createdAt:e.created_at}}))},[v,y,b]);let O=async(e,t)=>{let n=Number(e.replace(`ORD-`,``));try{await x.mutateAsync({id:n,payload:{status:t.toLowerCase(),credit_price:t===`Paid`?null:0}})}catch(e){console.error(e),alert(`Failed to update status`)}},k=async()=>{if(!w||!E)return;let e=(w.creditAmount??0)-Number(E),t=Number(w.id.replace(`ORD-`,``));try{await x.mutateAsync({id:t,payload:{status:e<=0?`paid`:`credit`,credit_price:e<=0?null:e}}),C(!1),T(null),D(``)}catch(e){console.error(e),alert(`Payment update failed`)}},A=e=>new Intl.NumberFormat(`en-IN`,{style:`currency`,currency:`INR`,maximumFractionDigits:2}).format(e),j=(0,u.useMemo)(()=>{let e=a.filter(e=>{let t=e.customerName.toLowerCase().includes(c.toLowerCase())||e.productName.toLowerCase().includes(c.toLowerCase())||e.id.toLowerCase().includes(c.toLowerCase()),n=m===`All`||e.paymentStatus===m;return t&&n});return e.sort((e,t)=>g===`date`?new Date(t.orderDate).getTime()-new Date(e.orderDate).getTime():g===`price`?t.finalPrice-e.finalPrice:g===`quantity`?t.quantity-e.quantity:0),e},[a,c,m,g]),M=(0,u.useMemo)(()=>{let e=a.reduce((e,t)=>e+t.finalPrice,0),t=a.reduce((e,t)=>e+t.quantity,0),n=a.filter(e=>e.paymentStatus===`Paid`).reduce((e,t)=>e+t.finalPrice,0),r=a.filter(e=>e.paymentStatus===`Credit`).reduce((e,t)=>e+t.finalPrice,0);return{totalVolume:A(e),totalUnits:t,paidVolume:A(n),creditVolume:A(r)}},[a]),N=e=>{try{return new Date(e).toLocaleDateString(`en-IN`,{month:`short`,day:`numeric`,year:`numeric`})}catch{return e}};return(0,d.jsxs)(`div`,{className:`min-h-screen bg-[#050816] text-zinc-100 p-4 sm:p-6 lg:p-10 font-sans relative overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200`,children:[(0,d.jsx)(`div`,{className:`absolute top-10 left-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse`}),(0,d.jsx)(`div`,{className:`absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse`}),(0,d.jsxs)(`div`,{className:`max-w-7xl mx-auto relative z-10 space-y-8 sm:space-y-10`,children:[(0,d.jsx)(`header`,{className:`flex justify-center items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]`,children:(0,d.jsxs)(l,{to:`/`,className:`px-5 py-2.5 bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 rounded-2xl font-black text-sm uppercase tracking-wider hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all flex items-center gap-2 shadow-lg cursor-pointer`,children:[f.plus,` New Dispatch`]})}),(0,d.jsxs)(`div`,{className:`grid grid-cols-1 sm:grid-cols-3 gap-5`,children:[(0,d.jsxs)(`div`,{className:`bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 relative overflow-hidden shadow-xl group`,children:[(0,d.jsx)(`div`,{className:`absolute top-0 left-0 w-1.5 h-full bg-cyan-400 rounded-l-3xl`}),(0,d.jsxs)(`div`,{className:`text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2`,children:[f.trending,` Total Revenue Billed`]}),(0,d.jsx)(`div`,{className:`text-3xl sm:text-4xl font-extrabold text-white tracking-tight`,children:M.totalVolume})]}),(0,d.jsxs)(`div`,{className:`bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 relative overflow-hidden shadow-xl group`,children:[(0,d.jsx)(`div`,{className:`absolute top-0 left-0 w-1.5 h-full bg-purple-400 rounded-l-3xl`}),(0,d.jsxs)(`div`,{className:`text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2`,children:[f.package,` Supplement Units`]}),(0,d.jsxs)(`div`,{className:`text-3xl sm:text-4xl font-extrabold text-white tracking-tight`,children:[M.totalUnits,` `,(0,d.jsx)(`span`,{className:`text-base text-zinc-500 font-medium`,children:`bottles`})]})]}),(0,d.jsxs)(`div`,{className:`bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 relative overflow-hidden shadow-xl group`,children:[(0,d.jsx)(`div`,{className:`absolute top-0 left-0 w-1.5 h-full bg-emerald-400 rounded-l-3xl`}),(0,d.jsxs)(`div`,{className:`text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2`,children:[f.tag,` Settlement Distribution`]}),(0,d.jsxs)(`div`,{className:`flex flex-col sm:flex-row items-start sm:items-baseline gap-2 sm:gap-3 mt-1 font-mono`,children:[(0,d.jsxs)(`span`,{className:`text-emerald-400 font-extrabold text-base sm:text-lg`,children:[M.paidVolume,` `,(0,d.jsx)(`span`,{className:`text-[10px] font-sans font-bold uppercase text-zinc-500 tracking-wider`,children:`Paid`})]}),(0,d.jsx)(`span`,{className:`hidden sm:inline text-zinc-600`,children:`/`}),(0,d.jsxs)(`span`,{className:`text-purple-400 font-extrabold text-base sm:text-lg`,children:[M.creditVolume,` `,(0,d.jsx)(`span`,{className:`text-[10px] font-sans font-bold uppercase text-zinc-500 tracking-wider`,children:`Credit`})]})]})]})]}),(0,d.jsxs)(`div`,{className:`flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-zinc-900/60 backdrop-blur-2xl border border-white/10 p-4 rounded-3xl shadow-lg`,children:[(0,d.jsxs)(`div`,{className:`relative flex-1 max-w-md`,children:[(0,d.jsx)(`div`,{className:`absolute inset-y-0 left-4 flex items-center pointer-events-none`,children:f.search}),(0,d.jsx)(`input`,{type:`text`,placeholder:`Search by client, product name or ID...`,value:c,onChange:e=>p(e.target.value),className:`w-full bg-zinc-950/80 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-zinc-100 text-sm font-medium focus:outline-none focus:border-cyan-400/80 focus:ring-2 focus:ring-cyan-400/20 transition-all placeholder:text-zinc-500`})]}),(0,d.jsxs)(`div`,{className:`flex flex-wrap items-center gap-3`,children:[(0,d.jsx)(`div`,{className:`flex bg-zinc-950/80 p-1.5 rounded-2xl border border-white/10`,children:[`All`,`Paid`,`Credit`].map(e=>(0,d.jsx)(`button`,{onClick:()=>h(e),className:`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${m===e?`bg-white/10 text-cyan-400 shadow-md`:`text-zinc-400 hover:text-zinc-200`}`,children:e},e))}),(0,d.jsxs)(`div`,{className:`relative`,children:[(0,d.jsxs)(`select`,{value:g,onChange:e=>_(e.target.value),className:`bg-zinc-950/80 border border-white/10 rounded-2xl px-4 py-3 text-zinc-200 text-xs font-bold uppercase tracking-wider appearance-none pr-9 focus:outline-none focus:border-cyan-400/80 cursor-pointer`,children:[(0,d.jsx)(`option`,{value:`date`,children:`Sort: Date`}),(0,d.jsx)(`option`,{value:`price`,children:`Sort: Price`}),(0,d.jsx)(`option`,{value:`quantity`,children:`Sort: Quantity`})]}),(0,d.jsx)(`div`,{className:`absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-xs font-bold`,children:`▼`})]})]})]}),(0,d.jsxs)(`div`,{className:`bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl`,children:[(0,d.jsx)(`div`,{className:`hidden lg:block overflow-x-auto`,children:(0,d.jsxs)(`table`,{className:`w-full text-left border-collapse`,children:[(0,d.jsx)(`thead`,{children:(0,d.jsxs)(`tr`,{className:`border-b border-white/10 bg-zinc-950/40 text-xs font-extrabold uppercase tracking-widest text-zinc-400`,children:[(0,d.jsx)(`th`,{className:`py-5 px-6`,children:`Dispatch ID & Date`}),(0,d.jsx)(`th`,{className:`py-5 px-6`,children:`Client Partner`}),(0,d.jsx)(`th`,{className:`py-5 px-6`,children:`Product SKU`}),(0,d.jsx)(`th`,{className:`py-5 px-6 text-center`,children:`Quantity`}),(0,d.jsx)(`th`,{className:`py-5 px-6`,children:`Status`}),(0,d.jsx)(`th`,{className:`py-5 px-6 text-right`,children:`Total Price`}),(0,d.jsx)(`th`,{className:`py-5 px-6 text-center`,children:`Action / Update Status`})]})}),(0,d.jsx)(`tbody`,{children:(0,d.jsx)(r,{children:j.length>0?j.map(e=>(0,d.jsxs)(s.tr,{layout:!0,initial:{opacity:0,y:10},animate:{opacity:1,y:0},exit:{opacity:0,scale:.95},transition:{duration:.3},className:`border-b border-white/5 hover:bg-white/4 transition-colors group`,children:[(0,d.jsxs)(`td`,{className:`py-5 px-6 font-mono`,children:[(0,d.jsxs)(`div`,{className:`text-zinc-200 font-bold text-sm flex items-center gap-2`,children:[f.calendar,` `,N(e.orderDate)]}),(0,d.jsx)(`div`,{className:`text-xs text-zinc-500 tracking-wider mt-0.5`,children:e.id})]}),(0,d.jsxs)(`td`,{className:`py-5 px-6`,children:[(0,d.jsxs)(`div`,{className:`text-zinc-100 font-bold text-sm flex items-center gap-2`,children:[f.user,` `,e.customerName]}),(0,d.jsx)(`div`,{className:`inline-block mt-1 px-2.5 py-0.5 rounded-full bg-white/5 text-zinc-400 text-xs font-semibold border border-white/10 tracking-wide`,children:e.customerTier})]}),(0,d.jsx)(`td`,{className:`py-5 px-6 max-w-xs`,children:(0,d.jsxs)(`div`,{className:`text-zinc-100 font-semibold text-sm flex items-center gap-2 truncate`,children:[f.package,` `,(0,d.jsx)(`span`,{className:`truncate`,children:e.productName})]})}),(0,d.jsxs)(`td`,{className:`py-5 px-6 text-center font-mono font-bold text-sm text-cyan-400`,children:[e.quantityStatus===`loose`?`${e.looseQuantity} ml`:`${e.bottleQuantity??e.quantity}`,(0,d.jsx)(`span`,{className:`text-xs text-zinc-500 ml-1 font-sans font-normal`,children:e.quantityStatus===`loose`?``:`bottles`})]}),(0,d.jsx)(`td`,{className:`py-5 px-6`,children:e.paymentStatus===`Paid`?(0,d.jsxs)(`span`,{className:`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-extrabold uppercase tracking-wider border border-cyan-400/30 shadow-inner`,children:[(0,d.jsx)(`span`,{className:`w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse`}),` `,`Paid`]}):(0,d.jsxs)(`span`,{className:`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-extrabold uppercase tracking-wider border border-purple-400/30 shadow-inner`,children:[(0,d.jsx)(`span`,{className:`w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse`}),` `,`Credit`]})}),(0,d.jsxs)(`td`,{className:`py-5 px-6 text-right`,children:[(0,d.jsx)(`div`,{className:`font-mono font-extrabold text-base text-white`,children:A(e.finalPrice)}),e.paymentStatus===`Credit`&&(0,d.jsxs)(`div`,{className:`mt-2 text-xs space-y-1`,children:[(0,d.jsxs)(`div`,{className:`text-emerald-400`,children:[`Paid: `,A(e.paidAmount)]}),(0,d.jsxs)(`div`,{className:`text-purple-400`,children:[`Credit: `,A(e.creditAmount??0)]})]})]}),(0,d.jsx)(`td`,{className:`py-5 px-6 text-center`,children:(0,d.jsxs)(`div`,{className:`inline-block relative group/select`,children:[(0,d.jsxs)(`select`,{value:e.paymentStatus,onChange:t=>O(e.id,t.target.value),className:`bg-zinc-900/90 hover:bg-zinc-800 border border-white/10 rounded-xl px-3 py-2 text-xs font-extrabold uppercase tracking-wider text-zinc-200 focus:outline-none focus:border-cyan-400/80 transition-all cursor-pointer appearance-none pr-8 shadow-md`,title:`Update Status`,children:[(0,d.jsx)(`option`,{value:`Paid`,className:`bg-zinc-950 text-cyan-400 font-bold`,children:`● Status: Paid`}),(0,d.jsx)(`option`,{value:`Credit`,className:`bg-zinc-950 text-purple-400 font-bold`,children:`● Status: Credit`})]}),e.paymentStatus===`Credit`&&(0,d.jsx)(`button`,{onClick:()=>{T(e),C(!0)},className:`
+    ml-3
+    px-3
+    py-2
+    rounded-xl
+    bg-purple-500/15
+    border
+    border-purple-400/20
+    text-purple-300
+    text-xs
+    font-bold
+    cursor-pointer
+  `,children:`Receive Payment`}),(0,d.jsx)(`div`,{className:`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 group-hover/select:text-cyan-400 transition-colors text-xs`,children:f.refresh})]})})]},e.id)):(0,d.jsx)(`tr`,{children:(0,d.jsx)(`td`,{colSpan:7,className:`text-center py-16 text-zinc-500 text-sm font-medium`,children:`No records match the current filter criteria.`})})})})]})}),(0,d.jsx)(`div`,{className:`block lg:hidden space-y-5 divide-white/10`,children:(0,d.jsx)(r,{children:j.length>0?j.map(e=>(0,d.jsxs)(s.div,{layout:!0,initial:{opacity:0,scale:.95},animate:{opacity:1,scale:1},exit:{opacity:0,scale:.95},className:`
+p-6
+space-y-4
+rounded-[2rem]
+bg-white/[0.03]
+border
+border-white/10
+backdrop-blur-xl
+shadow-[0_10px_40px_rgba(0,0,0,0.25)]
+`,children:[(0,d.jsxs)(`div`,{className:`flex justify-between items-start`,children:[(0,d.jsxs)(`div`,{children:[(0,d.jsx)(`span`,{className:`text-xs text-zinc-500 font-mono tracking-wider`,children:e.id}),(0,d.jsxs)(`div`,{className:`text-zinc-200 font-bold text-sm flex items-center gap-1.5 mt-0.5`,children:[f.calendar,` `,N(e.orderDate)]})]}),(0,d.jsx)(`div`,{children:e.paymentStatus===`Paid`?(0,d.jsxs)(`span`,{className:`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-extrabold uppercase tracking-wider border border-cyan-400/30`,children:[(0,d.jsx)(`span`,{className:`w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse`}),` `,`Paid`]}):(0,d.jsxs)(`span`,{className:`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-extrabold uppercase tracking-wider border border-purple-400/30`,children:[(0,d.jsx)(`span`,{className:`w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse`}),` `,`Credit`]})})]}),(0,d.jsxs)(`div`,{className:`space-y-1 bg-zinc-900/50 p-4 rounded-2xl border border-white/5`,children:[(0,d.jsxs)(`div`,{className:`text-zinc-100 font-bold text-base flex items-center gap-2`,children:[f.user,` `,e.customerName]}),(0,d.jsx)(`div`,{className:`text-zinc-400 text-xs font-semibold pl-6`,children:e.customerTier})]}),(0,d.jsxs)(`div`,{className:`flex items-center gap-2 text-zinc-200 text-sm font-medium`,children:[f.package,` `,(0,d.jsx)(`span`,{className:`truncate`,children:e.productName})]}),(0,d.jsxs)(`div`,{className:`flex items-center justify-between pt-2 border-t border-white/5`,children:[(0,d.jsxs)(`div`,{className:`text-sm`,children:[(0,d.jsx)(`span`,{className:`text-zinc-500 mr-2`,children:`Qty:`}),(0,d.jsx)(`span`,{className:`font-mono font-bold text-cyan-400 text-base`,children:e.quantityStatus===`loose`?`${e.looseQuantity} ml`:`${e.bottleQuantity??e.quantity} bottles`})]}),(0,d.jsxs)(`div`,{className:`text-right`,children:[(0,d.jsx)(`span`,{className:`text-zinc-500 text-xs block`,children:`Total Price`}),(0,d.jsx)(`span`,{className:`font-mono font-extrabold text-xl text-white`,children:A(e.finalPrice)}),e.paymentStatus===`Credit`&&(0,d.jsxs)(`div`,{className:`mt-2 space-y-1 text-xs`,children:[(0,d.jsxs)(`div`,{className:`text-emerald-400 font-semibold`,children:[`Paid: `,A(e.paidAmount)]}),(0,d.jsxs)(`div`,{className:`text-purple-400 font-semibold`,children:[`Credit: `,A(e.creditAmount??0)]})]})]})]}),(0,d.jsxs)(`div`,{className:`pt-3 border-t border-white/5 space-y-3`,children:[(0,d.jsxs)(`div`,{className:`flex items-center justify-between`,children:[(0,d.jsx)(`span`,{className:`text-xs font-semibold text-zinc-400 uppercase tracking-wider`,children:`Update Status:`}),(0,d.jsxs)(`div`,{className:`relative inline-block`,children:[(0,d.jsxs)(`select`,{value:e.paymentStatus,onChange:t=>O(e.id,t.target.value),className:`
+        bg-zinc-900
+        border
+        border-white/10
+        rounded-xl
+        px-3
+        py-1.5
+        text-xs
+        font-extrabold
+        uppercase
+        tracking-wider
+        text-zinc-200
+        focus:outline-none
+        focus:border-cyan-400/80
+        appearance-none
+        pr-8
+        `,children:[(0,d.jsx)(`option`,{value:`Paid`,children:`● Status: Paid`}),(0,d.jsx)(`option`,{value:`Credit`,children:`● Status: Credit`})]}),(0,d.jsx)(`div`,{className:`
+      absolute
+      right-2.5
+      top-1/2
+      -translate-y-1/2
+      pointer-events-none
+      text-zinc-400
+      text-xs
+      `,children:f.refresh})]})]}),e.paymentStatus===`Credit`&&(0,d.jsx)(`button`,{onClick:()=>{T(e),C(!0)},className:`
+      w-full
+      rounded-2xl
+      py-3
+      bg-purple-500/15
+      border
+      border-purple-400/20
+      text-purple-300
+      text-sm
+      font-bold
+      cursor-pointer
+      `,children:`Receive Payment`})]})]},e.id)):(0,d.jsx)(`div`,{className:`text-center py-16 text-zinc-500 text-sm font-medium`,children:`No records match the current filter criteria.`})})})]})]}),(0,d.jsx)(r,{children:S&&w&&(0,d.jsx)(`div`,{className:`
+fixed
+inset-0
+z-[999]
+flex
+items-center
+justify-center
+bg-black/70
+backdrop-blur-sm
+p-4
+`,children:(0,d.jsxs)(s.div,{initial:{opacity:0,scale:.9},animate:{opacity:1,scale:1},exit:{opacity:0,scale:.9},transition:{duration:.2},className:`
+w-full
+max-w-md
+bg-zinc-900
+border
+border-white/10
+rounded-3xl
+p-6
+space-y-5
+shadow-2xl
+`,children:[(0,d.jsxs)(`div`,{className:`
+flex
+justify-between
+items-center
+`,children:[(0,d.jsx)(`h3`,{className:`
+text-xl
+font-bold
+text-white
+`,children:`Receive Payment`}),(0,d.jsx)(`button`,{onClick:()=>{C(!1),T(null),D(``)},className:`
+text-zinc-400
+hover:text-white
+text-xl
+cursor-pointer
+`,children:`✕`})]}),(0,d.jsxs)(`div`,{className:`
+space-y-4
+`,children:[(0,d.jsxs)(`div`,{className:`
+bg-zinc-950/70
+rounded-2xl
+p-4
+border
+border-white/5
+space-y-2
+`,children:[(0,d.jsx)(`p`,{className:`
+text-xs
+text-zinc-400
+
+`,children:`Customer`}),(0,d.jsx)(`p`,{className:`
+font-bold
+text-white
+`,children:w.customerName}),(0,d.jsxs)(`p`,{className:`
+text-purple-400
+font-medium
+text-xs
+
+`,children:[`Remaining Credit:`,` `,A(w.creditAmount??0)]})]}),(0,d.jsx)(`input`,{type:`number`,min:`0`,value:E,onChange:e=>D(e.target.value),placeholder:`
+Enter received amount
+`,className:`
+w-full
+rounded-2xl
+bg-zinc-950
+border
+border-white/10
+px-4
+py-3
+text-white
+focus:outline-none
+focus:border-purple-400
+`})]}),(0,d.jsxs)(`div`,{className:`
+flex
+gap-3
+`,children:[(0,d.jsx)(`button`,{onClick:()=>{C(!1),T(null)},className:`
+flex-1
+py-3
+bg-zinc-800
+rounded-2xl
+font-medium
+text-xs
+cursor-pointer
+`,children:`Cancel`}),(0,d.jsx)(`button`,{onClick:k,className:`
+flex-1
+py-3
+bg-purple-500
+rounded-2xl
+text-white
+font-medium
+text-xs
+cursor-pointer
+`,children:`Update Payment`})]})]})})})]})};export{p as default};

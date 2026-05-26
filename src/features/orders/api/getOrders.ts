@@ -4,6 +4,9 @@ export interface CreateOrderPayload {
   user: number;
   product: number;
   quantity: number;
+  quantity_status: "bottle" | "loose";
+  bottle_quantity: number | null;
+  loose_quantity: number | null;
   status: "credit" | "paid";
   price: number;
   credit_price: number | null;

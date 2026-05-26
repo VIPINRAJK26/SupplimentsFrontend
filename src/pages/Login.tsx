@@ -24,7 +24,7 @@ const Login: React.FC = () => {
         password: form.password,
       });
 
-      navigate("/index")
+      navigate("/")
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Invalid credentials");
     }

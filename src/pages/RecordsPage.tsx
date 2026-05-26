@@ -13,6 +13,12 @@ export interface RecordItem {
   productName: string;
   quantity: number;
 
+  quantityStatus: "bottle" | "loose";
+
+  looseQuantity: number | null;
+
+  bottleQuantity: number | null;
+
   finalPrice: number;
 
   paymentStatus: "Credit" | "Paid";
@@ -170,7 +176,6 @@ const RecordsPage: React.FC = () => {
   );
   const [sortBy, setSortBy] = useState<"date" | "price" | "quantity">("date");
   const { data: orders } = useOrders();
-  console.log(orders, "orders in order page");
   const { data: customers } = useCustomers();
   const { data: products } = useProducts();
   const updateOrderMutation = useUpdateOrder();
@@ -219,6 +224,12 @@ const RecordsPage: React.FC = () => {
         productName: product?.name ?? "Unknown Product",
 
         quantity: order.quantity,
+
+        quantityStatus: order.quantity_status,
+
+        looseQuantity: order.loose_quantity,
+
+        bottleQuantity: order.bottle_quantity,
 
         finalPrice: totalPrice,
 
@@ -373,7 +384,7 @@ const RecordsPage: React.FC = () => {
         {/* Navigation Header */}
         <header className="flex justify-center items-center bg-white/5 backdrop-blur-2xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
           <Link
-            to="/index"
+            to="/"
             className="px-5 py-2.5 bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 rounded-2xl font-black text-sm uppercase tracking-wider hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all flex items-center gap-2 shadow-lg cursor-pointer"
           >
             {SVG_ICONS.plus} New Dispatch
@@ -548,9 +559,14 @@ const RecordsPage: React.FC = () => {
 
                         {/* Quantity */}
                         <td className="py-5 px-6 text-center font-mono font-bold text-sm text-cyan-400">
-                          {record.quantity}
+                          {record.quantityStatus === "loose"
+                            ? `${record.looseQuantity} ml`
+                            : `${record.bottleQuantity ?? record.quantity}`}
+
                           <span className="text-xs text-zinc-500 ml-1 font-sans font-normal">
-                            units
+                            {record.quantityStatus === "loose"
+                              ? ""
+                              : "bottles"}
                           </span>
                         </td>
 
@@ -725,7 +741,9 @@ shadow-[0_10px_40px_rgba(0,0,0,0.25)]
                       <div className="text-sm">
                         <span className="text-zinc-500 mr-2">Qty:</span>
                         <span className="font-mono font-bold text-cyan-400 text-base">
-                          {record.quantity}
+                          {record.quantityStatus === "loose"
+                            ? `${record.looseQuantity} ml`
+                            : `${record.bottleQuantity ?? record.quantity} bottles`}
                         </span>
                       </div>
                       <div className="text-right">

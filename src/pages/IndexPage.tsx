@@ -99,7 +99,13 @@ const IndexPage: React.FC = () => {
   );
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [quantityType, setQuantityType] = useState<"bottle" | "loose">(
+    "bottle",
+  );
+
   const [quantity, setQuantity] = useState<number>(1);
+
+  const [looseQuantity, setLooseQuantity] = useState<string>("");
   const [paymentType, setPaymentType] = useState<"Credit" | "Paid">("Paid");
   const [creditAmount, setCreditAmount] = useState<string>("");
   const { data: customers } = useCustomers();
@@ -147,14 +153,29 @@ const IndexPage: React.FC = () => {
 
     const unitPrice = Number(customerProductRecord.price);
 
-    const finalPrice = unitPrice * quantity;
+    let finalPrice = 0;
+
+    if (quantityType === "bottle") {
+      finalPrice = unitPrice * quantity;
+    } else {
+      const enteredMl = Number(looseQuantity || 0);
+
+      finalPrice = (enteredMl / 20) * unitPrice;
+    }
 
     return {
       unitPrice,
       finalPriceNum: finalPrice,
       finalPriceFormatted: formatINR(finalPrice),
     };
-  }, [customers, selectedCustomerId, selectedProductId, quantity]);
+  }, [
+    customers,
+    selectedCustomerId,
+    selectedProductId,
+    quantity,
+    quantityType,
+    looseQuantity,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,7 +193,22 @@ const IndexPage: React.FC = () => {
       const payload: CreateOrderPayload = {
         user: Number(selectedCustomerId),
         product: Number(selectedProductId),
-        quantity,
+        quantity:
+          quantityType === "bottle"
+            ? quantity
+            : Number(looseQuantity),
+
+        quantity_status: quantityType,
+
+        bottle_quantity:
+          quantityType === "bottle"
+            ? quantity
+            : null,
+
+        loose_quantity:
+          quantityType === "loose"
+            ? Number(looseQuantity)
+            : null,
 
         status: paymentType === "Credit" ? "credit" : "paid",
 
@@ -216,7 +252,7 @@ const IndexPage: React.FC = () => {
           to="/records"
           className="px-5 py-2.5 bg-linear-to-r text-center from-cyan-400 to-teal-400 text-zinc-950 rounded-2xl font-black text-sm uppercase tracking-wider hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
         >
-           View Records
+          View Records
         </Link>
       </div>
 
@@ -304,29 +340,107 @@ const IndexPage: React.FC = () => {
           </div>
 
           {/* Quantity Selector */}
-          <div className="flex items-center justify-between bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
-            <span className="text-sm font-semibold text-zinc-300">
-              Quantity
-            </span>
-            <div className="flex items-center gap-3">
+          <div className="space-y-5">
+            <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+              Quantity Type
+            </label>
+
+            {/* Bottle / Loose Toggle */}
+
+            <div className="grid grid-cols-2 gap-4 bg-zinc-900/60 p-2 rounded-2xl border border-white/10">
               <button
                 type="button"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-200 font-bold transition-colors flex items-center justify-center active:scale-95 cursor-pointer"
+                onClick={() => {
+                  setQuantityType("bottle");
+                  setLooseQuantity("");
+                }}
+                className={`py-3 rounded-xl font-bold transition-all cursor-pointer ${
+                  quantityType === "bottle"
+                    ? "bg-cyan-500 text-zinc-950"
+                    : "text-zinc-400"
+                }`}
               >
-                -
+                Bottle
               </button>
-              <span className="w-10 text-center font-bold text-lg text-cyan-400">
-                {quantity}
-              </span>
+
               <button
                 type="button"
-                onClick={() => setQuantity((q) => q + 1)}
-                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-200 font-bold transition-colors flex items-center justify-center active:scale-95 cursor-pointer"
+                onClick={() => {
+                  setQuantityType("loose");
+                  setQuantity(1);
+                }}
+                className={`py-3 rounded-xl font-bold transition-all cursor-pointer ${
+                  quantityType === "loose"
+                    ? "bg-purple-500 text-white"
+                    : "text-zinc-400"
+                }`}
               >
-                +
+                Loose
               </button>
             </div>
+
+            {/* Bottle Quantity */}
+
+            <AnimatePresence mode="wait">
+              {quantityType === "bottle" ? (
+                <motion.div
+                  key="bottle"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <div className="flex items-center justify-between bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
+                    <span className="text-sm font-semibold text-zinc-300">
+                      Bottle Quantity
+                    </span>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10"
+                      >
+                        -
+                      </button>
+
+                      <span className="w-10 text-center font-bold text-lg text-cyan-400">
+                        {quantity}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="loose"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-zinc-300">
+                      Loose Quantity (ml)
+                    </label>
+
+                    <input
+                      type="number"
+                      min="1"
+                      value={looseQuantity}
+                      onChange={(e) => setLooseQuantity(e.target.value)}
+                      placeholder="Enter loose quantity"
+                      className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-4 py-3.5 text-zinc-100 focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* 4. Dynamic Pricing Display (Appears when both customer and product are selected) */}
@@ -356,7 +470,11 @@ const IndexPage: React.FC = () => {
 
                     <div className="flex justify-between text-zinc-400 text-sm">
                       <span>Quantity</span>
-                      <span className="font-mono">{quantity}</span>
+                      <span className="font-mono">
+                        {quantityType === "bottle"
+                          ? `${quantity} Bottle(s)`
+                          : `${looseQuantity || 0} ml`}
+                      </span>
                     </div>
                   </div>
 
@@ -496,7 +614,11 @@ const IndexPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>Quantity:</span>
-                  <span className="text-zinc-200 font-bold">{quantity}</span>
+                  <span className="text-zinc-200 font-bold">
+                    {quantityType === "bottle"
+  ? `${quantity} Bottle(s)`
+  : `${looseQuantity} ml`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-zinc-400 pt-1 border-t border-white/5">
                   <span>Total Billed:</span>
