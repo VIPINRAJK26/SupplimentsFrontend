@@ -238,7 +238,7 @@ const IndexPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050816] text-zinc-100 flex flex-col items-center justify-center relative overflow-x-hidden p-4 sm:p-6 lg:p-8 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="h-screen bg-[#050816] text-zinc-100 flex flex-col items-center justify-center relative overflow-x-hidden p-4 sm:p-6 lg:p-8 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Syringe Loading Modal overlay */}
       <SyringeLoader isOpen={isSubmitting} />
 
