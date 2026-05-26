@@ -238,7 +238,7 @@ const IndexPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-[#050816] text-zinc-100 flex flex-col items-center justify-center relative overflow-x-hidden p-4 sm:p-6 lg:p-8 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-dvh bg-[#050816] overflow-x-hidden text-zinc-100 flex flex-col items-center justify-center relative  p-4 sm:p-6 lg:p-8 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Syringe Loading Modal overlay */}
       <SyringeLoader isOpen={isSubmitting} />
 
@@ -616,8 +616,8 @@ const IndexPage: React.FC = () => {
                   <span>Quantity:</span>
                   <span className="text-zinc-200 font-bold">
                     {quantityType === "bottle"
-  ? `${quantity} Bottle(s)`
-  : `${looseQuantity} ml`}
+                      ? `${quantity} Bottle(s)`
+                      : `${looseQuantity} ml`}
                   </span>
                 </div>
                 <div className="flex justify-between text-zinc-400 pt-1 border-t border-white/5">
