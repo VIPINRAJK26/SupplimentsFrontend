@@ -12,8 +12,8 @@ function App() {
     <Router>
       <Suspense fallback={<SyringeLoader />}>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/index" element={<IndexPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<IndexPage />} />
           <Route path="/records" element={<RecordsPage />} />
         </Routes>
       </Suspense>
